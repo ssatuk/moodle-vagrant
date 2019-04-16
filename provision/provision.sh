@@ -103,7 +103,7 @@ apt_package_install_list=(
 ### FUNCTIONS
 
 is_utility_installed() {
-  local utilities=`cat ${MOODLE_CONFIG} | shyaml get-values utilities.${1} 2> /dev/null`
+  local utilities=`cat ${VVV_CONFIG} | shyaml get-values utilities.${1} 2> /dev/null`
   for utility in ${utilities}; do
     if [[ "${utility}" == "${2}" ]]; then
       return 0
@@ -158,8 +158,8 @@ cleanup_terminal_splash() {
   if [[ -f /etc/update-motd.d/98-cloudguest ]]; then
     rm /etc/update-motd.d/98-cloudguest
   fi
-  #cp "/srv/config/update-motd.d/00-vvv-bash-splash" "/etc/update-motd.d/00-vvv-bash-splash"
-  #chmod +x /etc/update-motd.d/00-vvv-bash-splash
+  cp "/srv/config/update-motd.d/00-vvv-bash-splash" "/etc/update-motd.d/00-vvv-bash-splash"
+  chmod +x /etc/update-motd.d/00-vvv-bash-splash
 }
 
 profile_setup() {
@@ -173,15 +173,15 @@ profile_setup() {
   echo " * Copying /srv/config/vimrc                             to /home/vagrant/.vimrc"
   cp "/srv/config/vimrc" "/home/vagrant/.vimrc"
 
-  #if [[ ! -d "/home/vagrant/.subversion" ]]; then
-  #  mkdir -p "/home/vagrant/.subversion"
-  #fi
+  if [[ ! -d "/home/vagrant/.subversion" ]]; then
+    mkdir -p "/home/vagrant/.subversion"
+  fi
 
-  #echo " * Copying /srv/config/subversion-servers                to /home/vagrant/.subversion/servers"
-  #cp "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
+  echo " * Copying /srv/config/subversion-servers                to /home/vagrant/.subversion/servers"
+  cp "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
 
-  #echo " * Copying /srv/config/subversion-config                 to /home/vagrant/.subversion/config"
-  #cp "/srv/config/subversion-config" "/home/vagrant/.subversion/config"
+  echo " * Copying /srv/config/subversion-config                 to /home/vagrant/.subversion/config"
+  cp "/srv/config/subversion-config" "/home/vagrant/.subversion/config"
 
   # If a bash_prompt file exists in the VVV config/ directory, copy to the VM.
   if [[ -f "/srv/config/bash_prompt" ]]; then
@@ -698,6 +698,7 @@ cleanup_vvv(){
   echo "127.0.0.1 vvv.local # vvv-auto" >> "/etc/hosts"
   echo "127.0.0.1 vvv.localhost # vvv-auto" >> "/etc/hosts"
   echo "127.0.0.1 vvv.test # vvv-auto" >> "/etc/hosts"
+  echo "127.0.0.1 moodle.test # vvv-auto" >> "/etc/hosts"
   if [[ `is_utility_installed core tideways` ]]; then
     echo "127.0.0.1 tideways.vvv.test # vvv-auto" >> "/etc/hosts"
   fi
@@ -724,33 +725,33 @@ if ! package_install; then
 fi
 
 tools_install
-#nginx_setup
-#mailhog_setup
+nginx_setup
+mailhog_setup
 
-#phpfpm_setup
-#services_restart
-#mysql_setup
+phpfpm_setup
+services_restart
+mysql_setup
 
 network_check
 # WP-CLI and debugging tools
 echo " "
-#echo "Installing/updating wp-cli and debugging tools"
-#echo "Installing/updating debugging tools"
+echo "Installing/updating wp-cli and debugging tools"
+echo "Installing/updating debugging tools"
 
-#wp_cli
-#php_codesniff
+wp_cli
+php_codesniff
 
-#network_check
+network_check
 # Time for WordPress!
-#echo " "
+echo " "
 
-#wpsvn_check
+wpsvn_check
 
 # VVV custom site import
-#echo " "
-#cleanup_vvv
+echo " "
+cleanup_vvv
 
-#set +xv
+set +xv
 # And it's done
 end_seconds="$(date +%s)"
 echo "-----------------------------"

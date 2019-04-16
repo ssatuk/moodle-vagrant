@@ -17,70 +17,113 @@ yellow_underlined="\033[4;38;5;3m"#136m"
 url=yellow_underlined
 creset="\033[0m"
 
-if File.file?(File.join(vagrant_dir, 'moodle-custom.yml')) == false then
-    puts "#{yellow}Copying #{red}moodle-config.yml#{yellow} to #{green}moodle-custom.yml#{yellow}\nIMPORTANT NOTE: Make all modifications to #{green}moodle-custom.yml#{yellow} in future so that they are not lost when moodle updates.#{creset}\n\n"
-    FileUtils.cp( File.join(vagrant_dir, 'moodle-config.yml'), File.join(vagrant_dir, 'moodle-custom.yml') )
+if File.file?(File.join(vagrant_dir, 'vvv-custom.yml')) == false then
+    puts "#{yellow}Copying #{red}vvv-config.yml#{yellow} to #{green}vvv-custom.yml#{yellow}\nIMPORTANT NOTE: Make all modifications to #{green}vvv-custom.yml#{yellow} in future so that they are not lost when VVV updates.#{creset}\n\n"
+    FileUtils.cp( File.join(vagrant_dir, 'vvv-config.yml'), File.join(vagrant_dir, 'vvv-custom.yml') )
   end
   
-  moodle_config_file = File.join(vagrant_dir, 'moodle-custom.yml')
+  vvv_config_file = File.join(vagrant_dir, 'vvv-custom.yml')
   
-  moodle_config = YAML.load_file(moodle_config_file)
+  vvv_config = YAML.load_file(vvv_config_file)
   
-  if ! moodle_config['sites'].kind_of? Hash then
-    moodle_config['sites'] = Hash.new
+  if ! vvv_config['sites'].kind_of? Hash then
+    vvv_config['sites'] = Hash.new
   end
   
-  if ! moodle_config['hosts'].kind_of? Hash then
-    moodle_config['hosts'] = Array.new
+  if ! vvv_config['hosts'].kind_of? Hash then
+    vvv_config['hosts'] = Array.new
   end
   
-  moodle_config['hosts'] += ['moodle.test'] 
-  moodle_config['hosts'] += ['core-moodle.test']
-  moodle_config['hosts'] += ['webgrind.test']
+  vvv_config['hosts'] += ['moodle.test'] 
+  vvv_config['hosts'] += ['moodle.local']
+  vvv_config['hosts'] += ['moodle.localhost']
 
+  vvv_config['sites'].each do |site, args|
+    if args.kind_of? String then
+        repo = args
+        args = Hash.new
+        args['repo'] = repo
+    end
+  
+    if ! args.kind_of? Hash then
+        args = Hash.new
+    end
+  
+    defaults = Hash.new
+    defaults['repo']   = false
+    defaults['vm_dir'] = "/srv/www/#{site}"
+    defaults['local_dir'] = File.join(vagrant_dir, 'www', site)
+    defaults['branch'] = 'master'
+    defaults['skip_provisioning'] = false
+    defaults['allow_customfile'] = false
+    defaults['nginx_upstream'] = 'php'
+    defaults['hosts'] = Array.new
+  
+    vvv_config['sites'][site] = defaults.merge(args)
+  
+    if ! vvv_config['sites'][site]['skip_provisioning'] then
+      site_host_paths = Dir.glob(Array.new(4) {|i| vvv_config['sites'][site]['local_dir'] + '/*'*(i+1) + '/vvv-hosts'})
+      vvv_config['sites'][site]['hosts'] += site_host_paths.map do |path|
+        lines = File.readlines(path).map(&:chomp)
+        lines.grep(/\A[^#]/)
+      end.flatten
+  
+      vvv_config['hosts'] += vvv_config['sites'][site]['hosts']
+    end
+    vvv_config['sites'][site].delete('hosts')
+  end
   
 
-  if ! moodle_config['utility-sources'].kind_of? Hash then
-    moodle_config['utility-sources'] = Hash.new
+  if ! vvv_config['dashboard']
+    vvv_config['dashboard'] = Hash.new
+  end
+  dashboard_defaults = Hash.new
+  dashboard_defaults['repo'] = 'https://github.com/Varying-Vagrant-Vagrants/dashboard.git'
+  dashboard_defaults['branch'] = 'master'
+  vvv_config['dashboard'] = dashboard_defaults.merge(vvv_config['dashboard'])
+
+
+  if ! vvv_config['utility-sources'].kind_of? Hash then
+    vvv_config['utility-sources'] = Hash.new
   else
-    moodle_config['utility-sources'].each do |name, args|
+    vvv_config['utility-sources'].each do |name, args|
       if args.kind_of? String then
           repo = args
           args = Hash.new
           args['repo'] = repo
           args['branch'] = 'master'
   
-          moodle_config['utility-sources'][name] = args
+          vvv_config['utility-sources'][name] = args
       end
     end
   end
 
   # for now default to core utilities from VVV project (our inspiration)
-  if ! moodle_config['utility-sources'].key?('core')
-    moodle_config['utility-sources']['core'] = Hash.new
-    moodle_config['utility-sources']['core']['repo'] = 'https://github.com/Varying-Vagrant-Vagrants/vvv-utilities.git'
-    moodle_config['utility-sources']['core']['branch'] = 'master'
+  if ! vvv_config['utility-sources'].key?('core')
+    vvv_config['utility-sources']['core'] = Hash.new
+    vvv_config['utility-sources']['core']['repo'] = 'https://github.com/Varying-Vagrant-Vagrants/vvv-utilities.git'
+    vvv_config['utility-sources']['core']['branch'] = 'master'
   end
   
-  if ! moodle_config['utilities'].kind_of? Hash then
-    moodle_config['utilities'] = Hash.new
+  if ! vvv_config['utilities'].kind_of? Hash then
+    vvv_config['utilities'] = Hash.new
   end
 
-  if ! moodle_config['vm_config'].kind_of? Hash then
-    moodle_config['vm_config'] = Hash.new
+  if ! vvv_config['vm_config'].kind_of? Hash then
+    vvv_config['vm_config'] = Hash.new
   end
   
   defaults = Hash.new
   defaults['memory'] = 2048
   defaults['cores'] = 1
-  # This should rarely be overridden, so it's not included in the default moodle-config.yml file.
-  defaults['private_network_ip'] = '192.168.50.4'
+  # This should rarely be overridden, so it's not included in the default vvv-config.yml file.
+  defaults['private_network_ip'] = '192.168.50.5'
   
-  moodle_config['vm_config'] = defaults.merge(moodle_config['vm_config'])
+  vvv_config['vm_config'] = defaults.merge(vvv_config['vm_config'])
   
-  if defined? moodle_config['vm_config']['provider'] then
+  if defined? vvv_config['vm_config']['provider'] then
     # Override or set the vagrant provider.
-    ENV['VAGRANT_DEFAULT_PROVIDER'] = moodle_config['vm_config']['provider']
+    ENV['VAGRANT_DEFAULT_PROVIDER'] = vvv_config['vm_config']['provider']
   end
   
 
@@ -124,8 +167,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Configurations from 1.0.x can be placed in Vagrant 1.1.x specs like the following.
   config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--memory", moodle_config['vm_config']['memory']]
-    v.customize ["modifyvm", :id, "--cpus", moodle_config['vm_config']['cores']]
+    v.customize ["modifyvm", :id, "--memory", vvv_config['vm_config']['memory']]
+    v.customize ["modifyvm", :id, "--cpus", vvv_config['vm_config']['cores']]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 
@@ -139,7 +182,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//srv/config", "1"]
 
     # Set the box name in VirtualBox to match the working directory.
-    moodle_pwd = Dir.pwd
+    vvv_pwd = Dir.pwd
     v.name = File.basename(vagrant_dir) + "_" + (Digest::SHA256.hexdigest vagrant_dir)[0..10]
   end
 
@@ -152,11 +195,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # be aware of the domains specified below. Watch the provisioning script as you may need to
   # enter a password for Vagrant to access your hosts file.
   #
-  # By default, we'll include the domains set up by through the moodle-hosts file
-  # located in the www/ directory and in moodle-config.yml.
+  # By default, we'll include the domains set up by through the vvv-hosts file
+  # located in the www/ directory and in vvv-config.yml.
   if defined?(VagrantPlugins::HostsUpdater)
     # Pass the found host names to the hostsupdater plugin so it can perform magic.
-    config.hostsupdater.aliases = moodle_config['hosts']
+    config.hostsupdater.aliases = vvv_config['hosts']
     config.hostsupdater.remove_on_suspend = true
   end
 
@@ -174,7 +217,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # should be changed. If more than one VM is running through VirtualBox, including other
   # Vagrant machines, different subnets should be used for each.
   #
-  config.vm.network :private_network, id: "moodle_primary", ip: moodle_config['vm_config']['private_network_ip']
+  config.vm.network :private_network, id: "moodle_primary", ip: vvv_config['vm_config']['private_network_ip']
 
   # Public Network (disabled)
   #
@@ -254,16 +297,41 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # of your project files here that you want to access through the web server
   config.vm.synced_folder "www/", "/srv/www", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
 
-  #moodle_config['sites'].each do |site, args|
-  #  if args['local_dir'] != File.join(vagrant_dir, 'www', site) then
-  #    config.vm.synced_folder args['local_dir'], args['vm_dir'], :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
-  #  end
-  #end
+  vvv_config['sites'].each do |site, args|
+    if args['local_dir'] != File.join(vagrant_dir, 'www', site) then
+      config.vm.synced_folder args['local_dir'], args['vm_dir'], :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
+    end
+  end
 
   config.vm.provision "fix-no-tty", type: "shell" do |s|
     s.privileged = false
     s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
   end
+
+# Customfile - POSSIBLY UNSTABLE
+  #
+  # Use this to insert your own (and possibly rewrite) Vagrant config lines. Helpful
+  # for mapping additional drives. If a file 'Customfile' exists in the same directory
+  # as this Vagrantfile, it will be evaluated as ruby inline as it loads.
+  #
+  # Note that if you find yourself using a Customfile for anything crazy or specifying
+  # different provisioning, then you may want to consider a new Vagrantfile entirely.
+  if File.exists?(File.join(vagrant_dir,'Customfile')) then
+    puts "Running Custom Vagrant file with additional vagrant configs at #{File.join(vagrant_dir,'Customfile')}\n\n"
+    eval(IO.read(File.join(vagrant_dir,'Customfile')), binding)
+    puts "Finished running Custom Vagrant file with additional vagrant configs, resuming normal vagrantfile execution\n\n"
+  end
+
+  vvv_config['sites'].each do |site, args|
+    if args['allow_customfile'] then
+      paths = Dir[File.join(args['local_dir'], '**', 'Customfile')]
+      paths.each do |file|
+        puts "Running additional site vagrant customfile at #{file}\n\n"
+        eval(IO.read(file), binding)
+      end
+    end
+  end
+
 
   # Provisioning
   #
@@ -288,4 +356,52 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision "default", type: "shell", path: File.join( "provision", "provision.sh" )
   end
 
+  # Vagrant Triggers
+  #
+  # We run various scripts on Vagrant state changes like `vagrant up`, `vagrant halt`,
+  # `vagrant suspend`, and `vagrant destroy`
+  #
+  # These scripts are run on the host machine, so we use `vagrant ssh` to tunnel back
+  # into the VM and execute things. By default, each of these scripts calls db_backup
+  # to create backups of all current databases. This can be overridden with custom
+  # scripting. See the individual files in config/homebin/ for details.
+  config.trigger.after :up do |trigger|
+    trigger.name = "VVV Post-Up"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_up" }
+    trigger.on_error = :continue
+  end
+  config.trigger.before :provision do |trigger|
+    trigger.info = "༼ つ ◕_◕ ༽つ Provisioning can take a few minutes, go make a cup of tea and sit back. If you only wanted to turn VVV on, use vagrant up"
+    trigger.on_error = :continue
+  end
+  config.trigger.after :provision do |trigger|
+    trigger.name = "VVV Post-Provision"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_provision" }
+    trigger.on_error = :continue
+  end
+  config.trigger.before :reload do |trigger|
+    trigger.name = "VVV Pre-Reload"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_halt" }
+    trigger.on_error = :continue
+  end
+  config.trigger.after :reload do |trigger|
+    trigger.name = "VVV Post-Reload"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_up" }
+    trigger.on_error = :continue
+  end
+  config.trigger.before :halt do |trigger|
+    trigger.name = "VVV Pre-Halt"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_halt" }
+    trigger.on_error = :continue
+  end
+  config.trigger.before :suspend do |trigger|
+    trigger.name = "VVV Pre-Suspend"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_suspend" }
+    trigger.on_error = :continue
+  end
+  config.trigger.before :destroy do |trigger|
+    trigger.name = "VVV Pre-Destroy"
+    trigger.run_remote = { inline: "/vagrant/config/homebin/vagrant_destroy" }
+    trigger.on_error = :continue
+  end
 end

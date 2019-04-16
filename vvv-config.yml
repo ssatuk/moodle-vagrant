@@ -13,7 +13,20 @@
 # Or, if your machine is already turned on:
 # vagrant provision
 #
+# These are your websites, and their names map on to the folders they're
+# located in. See the docs for how to define these, and what all the keys
+# and options are
+sites:
 
+  # latest version of WordPress, can be used for client work and testing
+  wordpress-one:
+    skip_provisioning: false
+    description: "A standard WP install, useful for building plugins, testing things, etc"
+    repo: https://github.com/Varying-Vagrant-Vagrants/custom-site-template.git
+    hosts:
+      - one.wordpress.test
+
+      
 # Utilities are system level items rather than sites, that install tools or packages
 # the core utilities install tools such as phpmyadmin
 utilities:
@@ -24,6 +37,8 @@ utilities:
     - webgrind # PHP Debugging
     - trusted-hosts # GitHub etc
     - tls-ca # SSL/TLS certificates
+    #- mongodb # needed for Tideways/XHGui
+    #- tideways # PHP profiling tool, also installs xhgui
     #- php56
     #- php70
     #- php71
@@ -41,3 +56,10 @@ vm_config:
   memory: 2048
   cores: 2
   # provider: vmware_workstation
+
+# General VVV options
+general:
+  # Backup the databases to the database/backups subfolder on halt/suspend/destroy, set to false to disable
+  db_backup: true
+  # Import the databases if they're missing from backups
+  db_restore: true

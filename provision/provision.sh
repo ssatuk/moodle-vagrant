@@ -713,17 +713,17 @@ echo "Bash profile setup and directories."
 cleanup_terminal_splash
 profile_setup
 
-#network_check
+network_check
 ## Package and Tools Install
-#echo " "
-#echo "Main packages check and install."
-#git_ppa_check
-#if ! package_install; then
-#  echo "Main packages check and install failed, halting provision"
-#  exit 1
-#fi
+echo " "
+echo "Main packages check and install."
+git_ppa_check
+if ! package_install; then
+  echo "Main packages check and install failed, halting provision"
+  exit 1
+fi
 
-#tools_install
+tools_install
 #nginx_setup
 #mailhog_setup
 

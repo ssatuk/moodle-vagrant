@@ -390,12 +390,15 @@ Vagrant.configure("2") do |config|
   # Enable agent forwarding on vagrant ssh commands. This allows you to use ssh keys
   # on your host machine inside the guest. See the manual for `ssh-add`.
   config.ssh.forward_agent = true
+  config.winssh.forward_agent = true
 
   # SSH Key Insertion
   #
   # This is disabled, we had several contributors who ran into issues.
   # See: https://github.com/Varying-Vagrant-Vagrants/VVV/issues/1551
   config.ssh.insert_key = false
+
+  #config.vm.provision :shell, :inline => "echo -e '#{File.read("#{Dir.home}/.ssh/id_rsa")}' > '/home/vagrant/.ssh/id_rsa'"
 
   # Default Ubuntu Box
   #

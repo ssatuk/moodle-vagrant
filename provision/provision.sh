@@ -714,6 +714,9 @@ echo "Bash profile setup and directories."
 cleanup_terminal_splash
 profile_setup
 
+echo "Add githuub to known hosts"
+ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
 network_check
 ## Package and Tools Install
 echo " "

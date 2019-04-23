@@ -100,6 +100,8 @@ fi
 
 if [[ false != "${REPO}" ]]; then
   # Clone or pull the site repository
+  noroot git config --global user.email "nobody@nowhere.com"
+  noroot git config --global user.name "vvv@vagrant"
   if [[ ! -d ${VM_DIR}/.git ]]; then
     echo -e "\nDownloading ${SITE}, see ${REPO}"
     noroot git clone --recursive --branch ${BRANCH} ${REPO} ${VM_DIR} -q

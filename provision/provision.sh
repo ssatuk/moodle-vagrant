@@ -42,6 +42,7 @@ apt_package_install_list=(
   # Extra PHP modules that we find useful
   php-pear
   php-imagick
+  #php7.2-intl # loaded in utilities
   php-memcache
   php-memcached
   php-ssh2

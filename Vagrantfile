@@ -208,8 +208,8 @@ vvv_config['dashboard'] = dashboard_defaults.merge(vvv_config['dashboard'])
 
 if ! vvv_config['utility-sources'].key?('core')
   vvv_config['utility-sources']['core'] = Hash.new
-  vvv_config['utility-sources']['core']['repo'] = 'https://github.com/Varying-Vagrant-Vagrants/vvv-utilities.git'
-  vvv_config['utility-sources']['core']['branch'] = 'master'
+  vvv_config['utility-sources']['core']['repo'] = 'https://github.com/ssatuk/vvv-utilities.git'
+  vvv_config['utility-sources']['core']['branch'] = 'ssat'
 end
 
 if ! vvv_config['utilities'].kind_of? Hash then

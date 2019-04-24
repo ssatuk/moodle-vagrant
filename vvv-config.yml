@@ -1,5 +1,4 @@
----
-
+# Copy this file to vvv-custom.yml and edit to suit before you first provision
 
 # This file is a YAML formatted file. YAML indenting is done in spaces not
 # tabs, and whitespace is significant. If you don't stick to this, it will
@@ -26,6 +25,19 @@ sites:
     hosts:
       - one.wordpress.test
 
+  #moodle:
+  #  skip_provisioning: false
+  #  description: "Moodle Dev"
+  #  repo: https://github.com/ssatuk/vvv-base-moodle.git
+  # hosts:
+  #    - moodledev.test
+  #  custom:
+  #    moodle: true
+  #    wp: false
+  #    htdocs: https://github.com/ssatuk/moodle.git
+  #    htdocsbranch: ssat_development
+  #    depth: 1
+
       
 # Utilities are system level items rather than sites, that install tools or packages
 # the core utilities install tools such as phpmyadmin
@@ -42,7 +54,7 @@ utilities:
     #- php56
     #- php70
     #- php71
-    #- php72
+    - php72
     #- php73
 
 # vm_config controls how Vagrant provisions the virtual machine, and can be used to

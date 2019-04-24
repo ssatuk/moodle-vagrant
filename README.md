@@ -1,3 +1,9 @@
+# Moodle-Vagrant
+
+This is a quick adaptation of [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV/) to host Moodle devlopment in Vagrant.
+
+Original README continues below:
+
 # Varying Vagrant Vagrants
 
 Varying Vagrant Vagrants is an open source [Vagrant](https://www.vagrantup.com) configuration focused on [WordPress](https://wordpress.org) development.

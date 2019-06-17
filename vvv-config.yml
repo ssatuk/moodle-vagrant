@@ -34,7 +34,7 @@ sites:
     custom:
       moodle: true
       wp: false
-      htdocs: git@bitbucket.org:julianssat/ssat.moodle.git
+      htdocs: git@bitbucket.org:ssat/moodle.git
       htdocsbranch: ssat-3.7.0-integration
       depth: 1
 

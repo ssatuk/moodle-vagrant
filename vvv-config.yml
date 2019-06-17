@@ -25,18 +25,18 @@ sites:
     hosts:
       - one.wordpress.test
 
-  #moodle:
-  #  skip_provisioning: false
-  #  description: "Moodle Dev"
-  #  repo: https://github.com/ssatuk/vvv-base-moodle.git
-  # hosts:
-  #    - moodledev.test
-  #  custom:
-  #    moodle: true
-  #    wp: false
-  #    htdocs: https://github.com/ssatuk/moodle.git
-  #    htdocsbranch: ssat_development
-  #    depth: 1
+  ssatmoodle:
+    skip_provisioning: false
+    description: "SSAT Moodle Dev"
+    repo: https://github.com/ssatuk/vvv-base-moodle.git
+    hosts:
+      - ssatmoodle.test
+    custom:
+      moodle: true
+      wp: false
+      htdocs: git@bitbucket.org:julianssat/ssat.moodle.git
+      htdocsbranch: ssat-3.7.0-integration
+      depth: 1
 
       
 # Utilities are system level items rather than sites, that install tools or packages

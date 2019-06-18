@@ -580,6 +580,11 @@ SCRIPT
   # This is a location for the TLS certificates to be accessible inside the VM
   config.vm.synced_folder "certificates/", "/srv/certificates", create: true
 
+  # /srv/moodledata
+  # 
+  # This is a location for moodledata, outside the webroot
+  config.vm.synced_folder "moodledata/", "/srv/moodledata", create: true
+
   # /var/log/
   #
   # If a log directory exists in the same directory as your Vagrantfile, a mapped

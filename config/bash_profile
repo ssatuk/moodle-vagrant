@@ -1,0 +1,69 @@
+# bash_profile
+#
+# Symlinked to the vagrant user's home directory. This loads
+# the default .bashrc provided by the virtual machine, which in
+# turn loads the .bash_aliases file that we provide. Use this
+# bash_profile to set environment variables and such.
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
+fi
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+red="\[\033[38;5;9m\]"
+green="\[\033[01;32m\]"
+blue="\[\033[38;5;4m\]"
+yellow="\[\033[38;5;3m\]"
+white="\[\033[00m\]"
+PS1="${debian_chroot:+($debian_chroot)}${red}\u${green}@${blue}\h${white}:${yellow}\w$ \[\033[0m\]"
+
+# setup bash prompt
+if [ -n "$BASH_VERSION" ]; then
+    # include .bash_prompt if it exists
+    if [ -f "$HOME/.bash_prompt" ]; then
+        . "$HOME/.bash_prompt"
+    fi
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# Set the WP_TESTS_DIR path directory so that we can use phpunit inside
+# plugins almost immediately.
+if [ -d "/srv/www/wordpress-trunk/public_html/tests/phpunit/" ]; then
+    export WP_TESTS_DIR=/srv/www/wordpress-trunk/public_html/tests/phpunit/
+elif [ -d "/srv/www/wordpress-develop/public_html/tests/phpunit/" ]; then
+    export WP_TESTS_DIR=/srv/www/wordpress-develop/public_html/tests/phpunit/
+fi
+
+# Set the WP_CORE_DIR path so phpunit tests are run against WP trunk
+if [ -d "/srv/www/wordpress-trunk/public_html/src/" ]; then
+    export WP_CORE_DIR=/srv/www/wordpress-trunk/public_html/src/
+elif [ -d "/srv/www/wordpress-develop/public_html/src/" ]; then
+    export WP_CORE_DIR=/srv/www/wordpress-develop/public_html/src/
+fi
+
+# add autocomplete for grunt
+eval "$(grunt --completion=bash)"
+
+# add autocomplete for wp-cli
+. /srv/config/wp-cli/wp-completion.bash
+
+# PHPCS path
+export PATH="$PATH:/srv/www/phpcs/scripts/"
+
+# Vagrant scripts
+export PATH="$PATH:/srv/config/homebin/"
+
+# nvm path
+export NVM_DIR="/srv/config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm

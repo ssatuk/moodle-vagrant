@@ -11,11 +11,14 @@ deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main
 
 # MariaDB 10.3 repository list - created 2018-06-19 13:36 UTC
 # http://downloads.mariadb.org/mariadb/repositories/
-deb [arch=amd64,i386] http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
-deb-src http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
+#deb [arch=amd64,i386] http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
+#deb-src http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
 
-deb [arch=amd64,i386] http://mirrors.coreix.net/mariadb/repo/10.1/ubuntu xenial main
-deb-src http://mirrors.coreix.net/mariadb/repo/10.1/ubuntu xenial main
+#deb [arch=amd64,i386] http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
+#deb-src http://mirrors.coreix.net/mariadb/repo/10.3/ubuntu xenial main
+
+# added 18-6-19
+deb [arch=amd64,arm64,i386,ppc64el] http://mirror.sax.uk.as61049.net/mariadb/repo/10.3/ubuntu xenial main
 
 # Provides Node.js
 deb https://deb.nodesource.com/node_10.x xenial main

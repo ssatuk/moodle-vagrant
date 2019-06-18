@@ -410,6 +410,7 @@ Vagrant.configure("2") do |config|
   # This is disabled, we had several contributors who ran into issues.
   # See: https://github.com/Varying-Vagrant-Vagrants/VVV/issues/1551
   config.ssh.insert_key = false
+  #config.vm.provision :shell, :inline => "echo -e '#{File.read("#{Dir.home}/.ssh/id_rsa")}' > '/home/vagrant/.ssh/id_rsa' && chmod 600 /home/vagrant/.ssh/id_rsa"
 
   # Default Ubuntu Box
   #

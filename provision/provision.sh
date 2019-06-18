@@ -836,6 +836,10 @@ network_check
 echo "Bash profile setup and directories."
 cleanup_terminal_splash
 profile_setup
+echo "Add GitHub to known hosts"
+ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+echo "Add BitBucket to known hosts"
+ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
 
 network_check
 # Package and Tools Install

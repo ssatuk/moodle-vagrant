@@ -18,7 +18,7 @@ VVV is a [10up](https://10up.com) creation and [transitioned](http://10up.com/bl
 
 VVV is under the [MIT License](LICENSE).
 
-## Objectives
+## Objectives   
 
 * Approachable development environment with a modern server configuration.
 * Stable state of software and configuration in default provisioning.
